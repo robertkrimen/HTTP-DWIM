@@ -1,0 +1,15 @@
+#!/usr/bin/env perl
+
+use Modern::Perl;
+
+sub {
+    my  ( $collate ) = @_;
+
+    $collate->import( <<_END_ );
+underscore
+jquery
+qunit
+_END_
+
+    $collate->write( 'cf' );
+}

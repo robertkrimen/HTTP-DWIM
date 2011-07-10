@@ -31,11 +31,23 @@ sub request {
     my $http_request = HTTP::Request->new( $type => $url );
     my $request = HTTP::DWIM::Request->new( request_agent => $self->request_agent, http_request => $http_request );
 
-    my ( $data ) = @options{qw/ data /};
+    $request->data( $options{ data } ) if exists $options{ data };
 
-    
+    return $request;
+}
 
+sub get {
+    my $self = shift;
+    my $url = shift;
 
+    my $request = $self->request( type => 'GET', url => $url, @_ );
+    return $request->run;
+}
+
+sub dwim {
+    my $class = shift;
+    my $base = shift;
+    return $class->new( base => $base, @_ );
 }
 
 1;

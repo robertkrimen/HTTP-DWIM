@@ -8,6 +8,8 @@ use Any::Moose;
 use HTTP::Request;
 use JSON::XS; my $JSON = JSON::XS->new;
 
+use HTTP::DWIM::Response;
+
 has request_agent => qw/ is rw required 1 /;
 has http_request => qw/ is rw required 1 isa HTTP::Request /;
 
@@ -97,6 +99,13 @@ sub data {
     }
 
     return $self;
+}
+
+sub run {
+    my $self = shift;
+    my $http_response = $self->request_agent->request( $self->http_request );
+    my $response = HTTP::DWIM::Response->new( http_response => $http_response );
+    return $response;
 }
 
 1;

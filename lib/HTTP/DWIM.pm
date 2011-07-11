@@ -9,7 +9,7 @@ use LWP::UserAgent;
 use Util::Utl;
 use Class::Load qw/ load_class /;
 
-use HTTP::DWIM::URL;
+use HTTP::DWIM::Util;
 use HTTP::DWIM::Request;
 
 has base => qw/ is rw /;
@@ -49,7 +49,7 @@ sub request {
     my %options = @_;
 
     my ( $url ) = @options{qw/ url /};
-    $url = HTTP::DWIM::URL->resolve( $self->base, $url );
+    $url = HTTP::DWIM::Util->resolve( $self->base, $url );
     
     my ( $type ) = @options{qw/ type /};
     $type = 'GET' unless defined $type;

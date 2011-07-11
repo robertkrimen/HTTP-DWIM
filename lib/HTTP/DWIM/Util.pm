@@ -1,4 +1,4 @@
-package HTTP::DWIM::URL;
+package HTTP::DWIM::Util;
 
 use strict;
 use warnings;
@@ -7,7 +7,6 @@ use URI;
 use URI::Split qw/ uri_split uri_join /;
 use Scalar::Util qw/ blessed /;
 use File::Spec::Unix;
-
 
 sub resolve {
     my $self = shift;

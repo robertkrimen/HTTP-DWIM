@@ -10,6 +10,7 @@ use JSON::XS; my $JSON = JSON::XS->new;
 
 use HTTP::DWIM::Response;
 
+has response_class => qw/ is rw required 1 /, trigger => \&HTTP::DWIM::load_class_attribute;
 has request_agent => qw/ is rw required 1 /;
 has http_request => qw/ is rw required 1 isa HTTP::Request /;
 
@@ -109,10 +110,16 @@ sub content {
     return $self;
 }
 
+sub new_response {
+    my $self = shift;
+    my $class = $self->response_class;
+    return $class->new( @_ );
+}
+
 sub run {
     my $self = shift;
     my $http_response = $self->request_agent->request( $self->http_request );
-    my $response = HTTP::DWIM::Response->new( http_response => $http_response );
+    my $response = $self->new_response( http_response => $http_response );
     return $response;
 }
 

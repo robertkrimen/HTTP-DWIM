@@ -7,6 +7,7 @@ use Any::Moose;
 
 use LWP::UserAgent;
 use Util::Utl;
+use Class::Load qw/ load_class /;
 
 use HTTP::DWIM::URL;
 use HTTP::DWIM::Request;
@@ -16,6 +17,24 @@ has base => qw/ is rw /;
 has request_agent => qw/ is ro lazy_build 1 /;
 sub _build_request_agent {
     return LWP::UserAgent->new
+}
+
+has request_class => qw/ is ro lazy_build 1 /, trigger => \&load_class_attribute;
+sub _build_request_class { 'HTTP::DWIM::Request' }
+
+has response_class => qw/ is ro lazy_build 1 /, trigger => \&load_class_attribute;
+sub _build_response_class { 'HTTP::DWIM::Response' }
+
+sub load_class_attribute {
+    my $self = shift;
+    my $value = shift;
+    load_class $value;
+}
+
+sub new_request {
+    my $self = shift;
+    my $class = $self->request_class;
+    return $class->new( response_class => $self->response_class, @_ );
 }
 
 sub request {
@@ -30,7 +49,7 @@ sub request {
     $type = uc $type;
 
     my $http_request = HTTP::Request->new( $type => $url );
-    my $request = HTTP::DWIM::Request->new( request_agent => $self->request_agent, http_request => $http_request );
+    my $request = $self->new_request( request_agent => $self->request_agent, http_request => $http_request );
 
     if ( $type eq 'GET' ) {
         my $query = utl->first( \%options, qw/ query content data /, { exclusive => 1 } );

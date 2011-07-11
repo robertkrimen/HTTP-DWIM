@@ -76,6 +76,12 @@ for my $type (qw/ OPTIONS HEAD GET DELETE /) {
         $options = ref $_[0] eq 'HASH' ? shift : { @_ };
         return $self->request( type => $type, url => $url, query => $query, success => $success, %$options );
     };
+    my $method = lc $type;
+    *$method = sub {
+        my $self = shift;
+        my $request = $self->$type( @_ );
+        return $request->run;
+    };
 }
 
 for my $type (qw/ POST PUT /) {
@@ -89,12 +95,12 @@ for my $type (qw/ POST PUT /) {
         $options = ref $_[0] eq 'HASH' ? shift : { @_ };
         return $self->request( type => $type, url => $url, content => $content, success => $success, %$options );
     };
-}
-
-sub get {
-    my $self = shift;
-    my $request = $self->GET( @_ );
-    return $request->run;
+    my $method = lc $type;
+    *$method = sub {
+        my $self = shift;
+        my $request = $self->$type( @_ );
+        return $request->run;
+    };
 }
 
 sub dwim {

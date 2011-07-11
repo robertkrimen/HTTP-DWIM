@@ -38,7 +38,23 @@ sub header {
     return $self->http_request->header( $name );
 }
 
-sub data {
+sub query {
+    my $self = shift;
+    my $query = shift;
+
+    my $http_request = $self->http_request;
+    my $url = $http_request->uri;
+    if ( defined $query ) {
+        if ( ref $query eq 'HASH' || ref $query eq 'ARRAY' )
+                { $url->query_form( ref( $query ) eq 'HASH' ? %$query : @$query ) }
+        else    { $url->query( "$query" ) }
+    }
+    else {
+        $url->query( '' );
+    }
+}
+
+sub content {
     my $self = shift;
     my ( $data_type, $data );
     if ( 2 == @_ ) {
@@ -54,15 +70,7 @@ sub data {
 
     my $type = uc $self->method;
     if ( $type eq 'GET' ) {
-        my $url = $http_request->uri;
-        if ( defined $data ) {
-            if ( ref $data eq 'HASH' || ref $data eq 'ARRAY' )
-                    { $url->query_form( ref( $data ) eq 'HASH' ? %$data : @$data ) }
-            else    { $url->query( "$data" ) }
-        }
-        else {
-            $url->query( '' );
-        }
+        $self->query( $data );
     }
     else {
         my ( $content, $content_type );

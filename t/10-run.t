@@ -15,7 +15,11 @@ $response = $dwim->get( '' );
 ok( $response->http_response->is_success );
 unlike( $response->content, qr/xyzzy/ );
 
-$response = $dwim->get( '', data => { q => 'xyzzy' } );
+$response = $dwim->get( { q => 'xyzzy' } );
+ok( $response->http_response->is_success );
+like( $response->content, qr/xyzzy/ );
+
+$response = $dwim->get( '' => { q => 'xyzzy' } );
 ok( $response->http_response->is_success );
 like( $response->content, qr/xyzzy/ );
 

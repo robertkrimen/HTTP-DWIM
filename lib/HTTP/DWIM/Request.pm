@@ -41,6 +41,9 @@ sub header {
 
 sub query {
     my $self = shift;
+    if ( !@_ ) {
+        # TODO What here? HASH? String?
+    }
     my $query = shift;
 
     my $http_request = $self->http_request;
@@ -57,6 +60,9 @@ sub query {
 
 sub content {
     my $self = shift;
+    if ( !@_ ) {
+        # TODO What here?
+    }
     my ( $data_type, $data );
     if ( 2 == @_ ) {
         $data_type = shift;

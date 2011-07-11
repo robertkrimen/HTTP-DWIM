@@ -31,10 +31,17 @@ sub load_class_attribute {
     load_class $value;
 }
 
+has _twim_new_request_arguments => qw/ is rw isa Maybe[CodeRef] /;
+
 sub new_request {
     my $self = shift;
     my $class = $self->request_class;
-    return $class->new( response_class => $self->response_class, @_ );
+    local @_ = @_;
+    unshift @_, response_class => $self->response_class;
+    if ( my $arguments = $self->_twim_new_request_arguments ) {
+        @_ = $arguments->( @_ );
+    }
+    return $class->new( @_ );
 }
 
 sub request {

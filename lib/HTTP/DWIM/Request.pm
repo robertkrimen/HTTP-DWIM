@@ -13,7 +13,7 @@ use HTTP::DWIM::Response;
 has response_class => qw/ is rw required 1 /, trigger => \&HTTP::DWIM::load_class_attribute;
 has request_agent => qw/ is rw required 1 /;
 has http_request => qw/ is rw required 1 isa HTTP::Request /;
-has [qw/ success error complete /] => qw/ is rw isa Maybe[CodeRef] /;
+has [qw/ _success _error _complete /] => qw/ is rw isa Maybe[CodeRef] /;
 
 sub type {
     return shift->method( @_ );
@@ -144,10 +144,28 @@ sub fulfill_complete {
     $code->( $self );
 }
 
+for my $method (qw/ success error complete /) {
+    no strict 'refs';
+    my $accessor = "_$method";
+    *$method = sub {
+        my $self = shift;
+        return $self->$accessor unless @_;
+        $self->$accessor( @_ );
+        return $self;
+    };
+}
+
 sub run {
     my $self = shift;
     # TODO Add fulfill_exception?
-    my $http_response = $self->request_agent->request( $self->http_request );
+    my $request_agent = $self->request_agent;
+    my $http_response;
+    if ( ref $request_agent eq 'CODE' ) {
+        $http_response = $request_agent->( $self->http_request );
+    }
+    else {
+        $http_response = $request_agent->request( $self->http_request );
+    }
     my $response = $self->new_response( http_response => $http_response );
 
     if ( $response->is_success )    { $self->fulfill_success( $response ) }

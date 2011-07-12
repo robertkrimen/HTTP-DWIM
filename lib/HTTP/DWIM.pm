@@ -69,6 +69,12 @@ sub request {
         $request->content( $content );
     }
 
+    for (qw/ success error complete /) {
+        if ( $options{ $_ } ) {
+            $request->$_( $options{ $_ } );
+        }
+    }
+
     return $request;
 }
 

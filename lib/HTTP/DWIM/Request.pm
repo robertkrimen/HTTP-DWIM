@@ -84,7 +84,15 @@ sub content {
         my ( $content, $content_type );
         $content_type = $http_request->header( 'Content-Type' );
         $data_type = $content_type unless length $data_type;
-        $data_type = 'form' unless length $data_type;
+        if ( !length $data_type ) {
+            if ( ref $data_type eq 'HASH' || ref $data_type eq 'ARRAY' ) {
+                $data_type = 'form';
+            }
+            else {
+                $data_type = 'text/plain';
+            }
+        }
+        $data_type = 'form' if !length $data_type;
 
         if ( $data_type eq 'form' || $data_type eq 'application/x-www-form-urlencoded' ) {
             $content_type = 'application/x-www-form-urlencoded';

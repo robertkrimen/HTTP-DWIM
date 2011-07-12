@@ -1,4 +1,5 @@
 package HTTP::DWIM;
+# ABSTRACT: Simple HTTP request & response management
 
 use strict;
 use warnings;

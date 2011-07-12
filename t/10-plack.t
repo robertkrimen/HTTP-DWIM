@@ -35,6 +35,12 @@ test_psgi
         ok( $response );
         ok( $response->is_success );
         is( $value, 2 );
+
+        $response = $dwim->post( '/', <<_END_ );
+Hello, World.
+_END_
+        ok( $response );
+        ok( $response->is_success );
     }
 ;
 

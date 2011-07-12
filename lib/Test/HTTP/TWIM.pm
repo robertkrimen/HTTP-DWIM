@@ -22,6 +22,16 @@ has dwim => qw/ is rw required 1 /, trigger => sub {
     post put
 /];
 
+has response => qw/ is rw clearer clear_response /, handles =>[qw/
+    status_code_is
+/];
+
+sub ran {
+    my $self = shift;
+    my $response = shift;
+    $self->response( $response );
+}
+
 sub twim {
     my $class = shift;
     my $dwim = HTTP::DWIM->dwim( @_ );

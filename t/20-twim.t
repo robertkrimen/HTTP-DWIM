@@ -36,6 +36,7 @@ test_psgi
         ok( $response->is_success );
         is( $value, 2 );
         $response->status_code_is( 200 );
+        $twim->status_code_is( 200 );
     }
 ;
 

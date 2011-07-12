@@ -26,6 +26,18 @@ has response => qw/ is rw clearer clear_response /, handles =>[qw/
     status_code_is
 /];
 
+for my $method (qw/ options head get delete post put /) {
+    no strict 'refs';
+    my $fail_method = "${method}_fail";
+    my $type = uc $method;
+    *$fail_method = sub {
+        my $self = shift;
+        my $request = $self->$type( @_ );
+        $request->test_fail( 1 );
+        return $request->run;
+    }
+}
+
 sub ran {
     my $self = shift;
     my $response = shift;

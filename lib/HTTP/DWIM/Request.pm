@@ -3,12 +3,13 @@ package HTTP::DWIM::Request;
 use strict;
 use warnings;
 
-use Any::Moose;
-
 use HTTP::Request;
 use JSON::XS; my $JSON = JSON::XS->new;
+use Try::Tiny;
 
 use HTTP::DWIM::Response;
+
+use Any::Moose;
 
 has response_class => qw/ is rw required 1 /, trigger => \&HTTP::DWIM::load_class_attribute;
 has request_agent => qw/ is rw required 1 /;
@@ -135,7 +136,16 @@ sub fulfill_success {
     my $self = shift;
     my $response = shift;
     return unless my $code = $self->success;
-    $code->( $response->content, $response );
+    my $data = my $content = $response->content;
+    my $ct = $response->header( 'Content-Type' );
+    if ( $ct && $ct =~ m/json/ ) {
+        try     { $data = $JSON->decode( $data ) }
+        catch   {
+            warn $_[0];
+            $data = $content;
+        }
+    }
+    $code->( $data, $response );
 }
 
 sub fulfill_error {

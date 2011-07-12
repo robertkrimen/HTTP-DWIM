@@ -19,10 +19,10 @@ sub _build_request_agent {
     return LWP::UserAgent->new
 }
 
-has request_class => qw/ is ro lazy_build 1 /, trigger => \&load_class_attribute;
+has request_class => qw/ is rw lazy_build 1 /, trigger => \&load_class_attribute;
 sub _build_request_class { 'HTTP::DWIM::Request' }
 
-has response_class => qw/ is ro lazy_build 1 /, trigger => \&load_class_attribute;
+has response_class => qw/ is rw lazy_build 1 /, trigger => \&load_class_attribute;
 sub _build_response_class { 'HTTP::DWIM::Response' }
 
 sub load_class_attribute {
@@ -118,7 +118,8 @@ for my $type (qw/ POST PUT /) {
 
 sub dwim {
     my $class = shift;
-    my $base = shift;
+    my $base;
+    $base = shift if @_ % 2; # Odd number of arguments
     return $class->new( base => $base, @_ );
 }
 

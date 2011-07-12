@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use Test::Most;
+plan skip_all => 'Skip remote testing';
 
 use HTTP::DWIM;
 

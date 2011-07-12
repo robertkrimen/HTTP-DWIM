@@ -6,7 +6,7 @@ use warnings;
 use Test::Most;
 
 use Plack::Test;
-use HTTP::DWIM;
+use Test::HTTP::TWIM;
 
 test_psgi
     app => sub {
@@ -14,11 +14,11 @@ test_psgi
         return [ 200, [ 'Content-Type' => 'text/plain' ], [ "Hello, World." ] ],
     },
     client => sub {
-        my $dwim = HTTP::DWIM->dwim( request_agent => $_[0] );
+        my $twim = Test::HTTP::TWIM->twim( request_agent => $_[0] );
         my ( $response, $value );
 
         undef $value;
-        $response = $dwim->get( '/', sub {
+        $response = $twim->get( '/', sub {
             $value = 1;
         } );
         ok( $response );
@@ -26,7 +26,7 @@ test_psgi
         is( $value, 1 );
 
         undef $value;
-        $response = $dwim->GET( '/', sub {
+        $response = $twim->GET( '/', sub {
             $value = 1;
         } )->complete( sub {
             $value += 1;
@@ -35,7 +35,9 @@ test_psgi
         ok( $response );
         ok( $response->is_success );
         is( $value, 2 );
+        $response->status_code_is( 200 );
     }
 ;
 
 done_testing;
+

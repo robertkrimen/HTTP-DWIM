@@ -13,6 +13,9 @@ sub resolve {
     my $base = shift;
     my $url = shift;
 
+    $base = '' unless defined $base;
+    $url = '' unless defined $url;
+
     if ( blessed $url && $url->isa( 'URI' ) ) {
         return $url->canonical;
     }
@@ -24,7 +27,7 @@ sub resolve {
 
     my %base;
     #$base = "http://$base" if defined $base && $base =~ m/:/ && $base !~ m{^[\w\-]+://};
-    $base = "http://$base" if defined $base && $base =~ m/^(?:[\w\-\.]+)(?::\d+|$)/;
+    $base = "http://$base" if $base =~ m/^(?:[\w\-\.]+)(?::\d+|$)/;
     @base{qw/ scheme identity path query fragment /} = uri_split( $base );
 
     my %url;

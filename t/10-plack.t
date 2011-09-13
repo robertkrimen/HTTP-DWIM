@@ -14,7 +14,7 @@ test_psgi
         return [ 200, [ 'Content-Type' => 'text/plain' ], [ "Hello, World." ] ],
     },
     client => sub {
-        my $dwim = HTTP::DWIM->dwim( request_agent => $_[0] );
+        my $dwim = HTTP::DWIM->dwim( base => 'localhost', request_agent => $_[0] );
         my ( $response, $value );
 
         undef $value;
@@ -50,7 +50,7 @@ test_psgi
         return [ 200, [ 'Content-Type' => 'application/json' ], [ "{ \"a\": 1 }" ] ],
     },
     client => sub {
-        my $dwim = HTTP::DWIM->dwim( request_agent => $_[0] );
+        my $dwim = HTTP::DWIM->dwim( base => 'localhost', request_agent => $_[0] );
         $dwim->get( sub {
             my $data = shift;
             cmp_deeply( $data, { a => 1 } );

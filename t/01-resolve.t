@@ -12,7 +12,7 @@ sub resolve {
 
 my ( $base, $url );
 
-is( resolve( $base, '' ), '/' );
+is( resolve( $base, '' ), '' );
 is( resolve( $base, '/' ), '/' );
 is( resolve( $base, 'http://localhost' ), 'http://localhost/' );
 is( resolve( $base, 'http://localhost?xyzzy=1' ), 'http://localhost?xyzzy=1' );
@@ -49,5 +49,23 @@ is( resolve( $base, '/path' ), 'http://example.org/path' );
 is( resolve( $base, '/path?query' ), 'http://example.org/path?query' );
 is( resolve( $base, 'path' ), 'http://example.org/0/1/2/path' );
 is( resolve( $base, 'path?query' ), 'http://example.org/0/1/2/path?query' );
+
+$base = 'localhost:8080';
+is( resolve( $base, '' ), 'http://localhost:8080/' );
+is( resolve( $base, '/path' ), 'http://localhost:8080/path' );
+
+$base = 'localhost:8080/test';
+is( resolve( $base, '' ), 'http://localhost:8080/test' );
+is( resolve( $base, '/path' ), 'http://localhost:8080/path' );
+is( resolve( $base, 'path' ), 'http://localhost:8080/test/path' );
+is( resolve( $base, 'path/' ), 'http://localhost:8080/test/path/' );
+
+$base = 'localhost';
+is( resolve( $base, '' ), 'http://localhost/' );
+is( resolve( $base, '/path' ), 'http://localhost/path' );
+
+#$base = 'localhost:/path';
+#is( resolve( $base, '' ), 'http://localhost/' );
+#is( resolve( $base, '/path' ), 'http://localhost/path' );
 
 done_testing;

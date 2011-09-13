@@ -23,6 +23,8 @@ sub resolve {
     }
 
     my %base;
+    #$base = "http://$base" if defined $base && $base =~ m/:/ && $base !~ m{^[\w\-]+://};
+    $base = "http://$base" if defined $base && $base =~ m/^(?:[\w\-\.]+)(?::\d+|$)/;
     @base{qw/ scheme identity path query fragment /} = uri_split( $base );
 
     my %url;
@@ -32,8 +34,11 @@ sub resolve {
         if ( '/' eq substr $base{ path }, -1 ) {
             $path = join '', $base{ path }, $path;
         }
-        else {
+        elsif ( length $path ) {
             $path = join '/', $base{ path }, $path;
+        }
+        else {
+            $path = $base{ path };
         }
     }
     $url{ path } = $path;

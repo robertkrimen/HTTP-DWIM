@@ -7,10 +7,14 @@ use Test::Most;
 
 use HTTP::DWIM;
 
-my ( $base, $dwim );
+my ( $base, $dwim, $request );
 
-$dwim = HTTP::DWIM->new;
+$dwim = HTTP::DWIM->new( base => 'localhost:8090' );
 
 ok( $dwim );
+
+$request = $dwim->GET( '/' );
+ok( $request );
+is( $request->url, 'localhost/' );
 
 done_testing;

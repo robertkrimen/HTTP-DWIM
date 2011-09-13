@@ -13,7 +13,7 @@ use Any::Moose;
 
 has response_class => qw/ is rw required 1 /, trigger => \&HTTP::DWIM::load_class_attribute;
 has request_agent => qw/ is rw required 1 /;
-has http_request => qw/ is rw required 1 isa HTTP::Request /;
+has http_request => qw/ is rw required 1 isa HTTP::Request /, handles => [qw/ url /];
 has [qw/ _success _error _complete /] => qw/ is rw isa Maybe[CodeRef] /;
 
 sub type {
@@ -55,9 +55,9 @@ sub query {
                 { $url->query_form( ref( $query ) eq 'HASH' ? %$query : @$query ) }
         else    { $url->query( "$query" ) }
     }
-    else {
-        $url->query( '' );
-    }
+    #else {
+    #    $url->query( '' );
+    #}
 }
 
 sub content {

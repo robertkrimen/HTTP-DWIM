@@ -60,10 +60,15 @@ sub query {
     #}
 }
 
+sub content_type {
+    my $self = shift;
+    return $self->http_request->header( 'Content-Type' => @_ );
+}
+
 sub content {
     my $self = shift;
     if ( !@_ ) {
-        # TODO What here?
+        return $self->http_request->content;
     }
     my ( $data_type, $data );
     if ( 2 == @_ ) {
@@ -86,7 +91,7 @@ sub content {
         $content_type = $http_request->header( 'Content-Type' );
         $data_type = $content_type unless length $data_type;
         if ( !length $data_type ) {
-            if ( ref $data_type eq 'HASH' || ref $data_type eq 'ARRAY' ) {
+            if ( ref $data eq 'HASH' || ref $data eq 'ARRAY' ) {
                 $data_type = 'form';
             }
             else {

@@ -24,6 +24,8 @@ has dwim => qw/ is rw required 1 /, trigger => sub {
 
 has response => qw/ is rw clearer clear_response /, handles =>[qw/
     status_code_is
+    body_like
+    content_like
 /];
 
 for my $method (qw/ options head get delete post put /) {

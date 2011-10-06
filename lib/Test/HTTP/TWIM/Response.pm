@@ -20,4 +20,15 @@ sub status_code_is {
     $Builder->is_eq( $self->http_response->code, $expected_code, $description );
 }
 
+sub content_like {
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+    my ( $self, $expected_content, $description ) = @_;
+
+    defined( $expected_content ) && defined or $_ = "content mismatch" for $description;
+
+    $Builder->like( $self->http_response->content, $expected_content, $description );
+}
+
+*body_like = \&content_like;
+
 1;

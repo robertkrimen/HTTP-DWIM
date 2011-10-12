@@ -28,6 +28,8 @@ sub content {
     return $self->http_response->decoded_content;
 }
 
+*decoded_content = \&content;
+
 sub undecoded_content {
     my $self = shift;
     return $self->http_response->content;

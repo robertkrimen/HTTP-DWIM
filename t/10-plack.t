@@ -41,6 +41,7 @@ Hello, World.
 _END_
         ok( $response );
         ok( $response->is_success );
+        is( $response->content, $response->decoded_content );
     }
 ;
 

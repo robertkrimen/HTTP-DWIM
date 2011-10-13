@@ -28,6 +28,7 @@ sub content {
     return $self->http_response->decoded_content;
 }
 
+*body = \&content;
 *decoded_content = \&content;
 
 sub undecoded_content {

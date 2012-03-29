@@ -14,7 +14,7 @@ use Any::Moose;
 has response_class => qw/ is rw required 1 /, trigger => \&HTTP::DWIM::load_class_attribute;
 has request_agent => qw/ is rw required 1 /;
 has http_request => qw/ is rw required 1 isa HTTP::Request /, handles => [qw/ url /];
-has [qw/ _success _error _complete /] => qw/ is rw isa Maybe[CodeRef] /;
+has [qw/ _success _error _complete /] => qw/ is rw isa ArrayRef /, default => sub { [] };
 
 sub type {
     return shift->method( @_ );
@@ -140,7 +140,7 @@ sub new_response {
 sub fulfill_success {
     my $self = shift;
     my $response = shift;
-    return unless my $code = $self->success;
+    return unless my @code = $self->success;
     my $data = my $content = $response->content;
     my $ct = $response->header( 'Content-Type' );
     if ( $ct && $ct =~ m/json/ ) {
@@ -150,21 +150,27 @@ sub fulfill_success {
             $data = $content;
         }
     }
-    $code->( $data, $response );
+    for my $code ( @code ) {
+        $code->( $data, $response );
+    }
 }
 
 sub fulfill_error {
     my $self = shift;
     my $response = shift;
-    return unless my $code = $self->error;
-    $code->( $self );
+    return unless my @code = $self->error;
+    for my $code ( @code ) {
+        $code->( $self );
+    }
 }
 
 sub fulfill_complete {
     my $self = shift;
     my $response = shift;
-    return unless my $code = $self->complete;
-    $code->( $self );
+    return unless my @code = $self->complete;
+    for my $code ( @code ) {
+        $code->( $self );
+    }
 }
 
 for my $method (qw/ success error complete /) {
@@ -172,8 +178,9 @@ for my $method (qw/ success error complete /) {
     my $accessor = "_$method";
     *$method = sub {
         my $self = shift;
-        return $self->$accessor unless @_;
-        $self->$accessor( @_ );
+        return @{ $self->$accessor } unless @_;
+        # TODO Assert we have a CodeRef, here
+        push @{ $self->$accessor }, @_;
         return $self;
     };
 }

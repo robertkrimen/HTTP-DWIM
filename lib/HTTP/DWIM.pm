@@ -1,6 +1,24 @@
 package HTTP::DWIM;
 # ABSTRACT: Simple HTTP request & response management
 
+=pod
+
+
+    my $dwim = HTTP::DWIM->new( base => 'example.com' );
+    my ( $request );
+
+    $request = $dwim->GET( '/', { a => 1, b => 2 } );
+    # http://example.com/?a=1&b=2
+
+    $response = $dwim->get( '/', { a => 1, b => 2 }, sub {
+        my ( $data, $status, $response ) = @_;
+        # This executes first
+    } )->complete( sub {
+        # Then this
+    } );
+
+=cut
+
 use strict;
 use warnings;
 
